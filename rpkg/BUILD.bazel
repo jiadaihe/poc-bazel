@@ -1,0 +1,7 @@
+genrule(
+    name = "rbuild",
+    srcs = glob(["jhe/*"]),
+    outs = ["install_output.txt"],
+    cmd = "cd rpkg && R CMD INSTALL jhe && > $@",
+    local = True  # has to be outside sandbox to avoid write permission
+)

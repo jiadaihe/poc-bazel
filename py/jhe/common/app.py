@@ -3,8 +3,9 @@ import subprocess
 import sys
 
 from flask import Flask
-from lib.calc import add
 
+def add(a, b):
+    return a + b
 
 def cmd(args):
     process = subprocess.Popen(args, stdout=subprocess.PIPE)

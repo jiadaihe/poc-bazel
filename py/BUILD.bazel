@@ -2,46 +2,52 @@ load("@rules_python//python:defs.bzl", "py_library")
 load("@rules_python//python:packaging.bzl", "py_wheel", "py_package")
 load("@pip_deps//:requirements.bzl", "requirement")
 
-py_library(
-    name = "app",
-    srcs = ["app/*.py", "lib/*.py"],
-    deps = [
-        requirement("flask"),
-        requirement("jinja2"),
-        requirement("werkzeug"),
-        requirement("itsdangerous"),
-        requirement("click"),
-    ],
-)
+# py_library(
+#     name = "app",
+#     srcs = ["app:*.py", "lib:*.py"],
+#     deps = [
+#         requirement("flask"),
+#         requirement("jinja2"),
+#         requirement("werkzeug"),
+#         requirement("itsdangerous"),
+#         requirement("click"),
+#     ],
+# )
+
+# py_package(
+#     name = "example_pkg",
+#     # Only include these Python packages.
+#     packages = ["app"],
+#     deps = [":main"],
+# )
 
 py_wheel(
     name = "minimal_with_py_package",
     # Package data. We're building "example_minimal_package-0.0.1-py3-none-any.whl"
-    distribution = "example_minimal_package",
+    distribution = "jhe",
     python_tag = "py3",
     version = "0.0.1",
-    deps = ["//py/app:*.py", "//py/lib:*.py"],
+    deps = ["//py/jhe:common"],
+    strip_path_prefixes=["py/"]
 )
 
 genrule(
-    name = "poetry_build",
-    srcs = glob(["**/*.py", "pyproject.toml", "README.md"]),
-    outs = ["dist/app-0.1.0-py3-none-any.whl"],
+    name = "pybuild",
+    srcs = glob(["**/**/*.py", "pyproject.toml", "README.md"]),
+    outs = ["dist/jhe-0.1.0-py3-none-any.whl"],
     cmd = """
         cd py && poetry build
         ls -l
-        ls $@
-        mkdir $(@D)
-        
-        cp dist/app-0.1.0-py3-none-any.whl $@
+        mkdir -p $(@D)
+        cp dist/jhe-0.1.0-py3-none-any.whl $@
     """,
     local = True
 )
 
 genrule(
-    name = "poetry_install",
+    name = "pyinstall",
     srcs = glob(["**/*.py", "pyproject.toml", "README.md"]),
     outs = ["install_output.txt"],
-    cmd = "cd py && poetry install && cd .. > $@",
+    cmd = "cd py && touch install_output.txt && poetry install && cd .. > $@",
     local = True
 )
